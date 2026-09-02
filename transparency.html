@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transparency & Security — GodHatesSolana ($GHS)</title>
+<meta name="description" content="Security architecture, live on-chain verification, independent audit status and Proof of Charity for $GHS.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--void:#0a0713;--pur:#9945FF;--grn:#14F195;--gold:#f5c542;--fire:#ff6a1a;--ink:#e9e3ff;--mut:#a99fc7}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(120% 90% at 50% -10%,#1a1030,#0a0713 60%);color:var(--ink);font-family:'Space Grotesk',system-ui,sans-serif;line-height:1.5}
+  a{color:var(--grn);text-decoration:none}
+  .wrap{max-width:920px;margin:0 auto;padding:26px 18px 80px}
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+  .brand{font-family:'Cinzel',serif;font-weight:800;letter-spacing:.5px}
+  .brand b{color:var(--gold)}
+  .back{font-size:.9rem;color:var(--mut)}
+  h1{font-family:'Cinzel',serif;font-weight:800;font-size:1.9rem;margin:.2em 0 .1em}
+  .sub{color:var(--mut);margin:0 0 6px}
+  .upd{font-size:.8rem;color:var(--mut)}
+  section{margin:26px 0;padding:18px;border:1px solid rgba(153,69,255,.28);border-radius:16px;background:rgba(16,10,32,.5)}
+  h2{font-family:'Cinzel',serif;font-weight:700;font-size:1.2rem;margin:0 0 12px;color:#fff}
+  h2 .n{color:var(--pur)}
+  p{margin:.4em 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+  .chk{display:flex;align-items:center;gap:10px;justify-content:center;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(10,7,19,.5);font-weight:600;color:#fff}
+  .chk:hover{border-color:var(--grn)}
+  .chk small{display:block;color:var(--mut);font-weight:400;font-size:.72rem}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .badge{font-size:.78rem;padding:6px 10px;border-radius:999px;border:1px solid rgba(20,241,149,.4);color:var(--grn);background:rgba(20,241,149,.06)}
+  .badge.warn{border-color:rgba(245,197,66,.5);color:var(--gold);background:rgba(245,197,66,.06)}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid rgba(255,255,255,.1);vertical-align:top}
+  th{color:var(--mut);font-weight:600}
+  .ok{color:var(--grn)} .pending{color:var(--gold)} .mono{font-family:ui-monospace,Menlo,monospace;word-break:break-all;font-size:.82rem}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;font-size:.85rem}
+  .node{padding:8px 10px;border-radius:10px;border:1px solid rgba(153,69,255,.4);background:rgba(10,7,19,.6)}
+  .arrow{color:var(--mut)}
+  .disc{font-size:.8rem;color:var(--mut);margin-top:26px;text-align:center}
+  .cta{display:inline-block;margin-top:8px;padding:9px 14px;border-radius:10px;background:linear-gradient(90deg,var(--fire),var(--gold));color:#1a0f00;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <span class="brand">GodHates<b>Solana</b> · $GHS</span>
+    <a class="back" href="/">← back to site</a>
+  </header>
+
+  <h1>Transparency &amp; Security</h1>
+  <p class="sub">Everything a careful holder should be able to verify — on-chain, in the code, and in our operations. Don't trust, verify.</p>
+  <p class="upd" id="updated">Last updated: —</p>
+
+  <section>
+    <h2><span class="n">01</span> · Verify the token on-chain (live)</h2>
+    <p>$GHS is a standard Solana token (Token-2022) launched on Pump.fun — there is <b>no custom smart contract</b> that could move balances or drain funds. We checked the mint directly on-chain, and you can re-verify live in one click:</p>
+    <div class="badges">
+      <span class="badge">Mint authority: renounced (null) — supply fixed</span>
+      <span class="badge">Freeze authority: none (null) — no blacklisting</span>
+      <span class="badge">Metadata: update authority null — immutable</span>
+      <span class="badge">Token-2022 extensions: metadata only — no transfer tax, no hook, no permanent delegate</span>
+      <span class="badge">Royalties: 0%</span>
+      <span class="badge">Top holder = Pump.fun bonding curve (protocol reserve, not a whale)</span>
+      <span class="badge" id="chainv">Verified on-chain via RPC</span>
+    </div>
+    <div class="grid">
+      <a class="chk" target="_blank" rel="noopener" href="https://rugcheck.xyz/tokens/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">RugCheck<small>risk score &amp; authorities</small></a>
+      <a class="chk" target="_blank" rel="noopener" href="https://www.solsniffer.com/scanner/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">Solsniffer<small>safety scan</small></a>
+      <a class="chk" target="_blank" rel="noopener" href="https://gopluslabs.io/token-security/solana/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">GoPlus<small>token security</small></a>
+      <a class="chk" target="_blank" rel="noopener" href="https://solscan.io/token/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">Solscan<small>authorities &amp; holders</small></a>
+      <a class="chk" target="_blank" rel="noopener" href="https://birdeye.so/token/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump?chain=solana">Birdeye<small>market &amp; liquidity</small></a>
+      <a class="chk" target="_blank" rel="noopener" href="https://dexscreener.com/solana/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">DexScreener<small>price &amp; volume</small></a>
+    </div>
+    <p style="margin-top:12px"><b>What to look for:</b> mint authority <i>renounced</i>, freeze authority <i>none</i>, healthy holder distribution. These are read live from the chain by the tools above — we don't ask you to take our word for it.</p>
+    <p class="mono">Mint / CA: 3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump</p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span> · Application security (the site &amp; the Church)</h2>
+    <p>The interactive Church connects a wallet only to <b>read</b> your public address and $GHS balance. Everything sensitive is enforced server-side, not in the browser:</p>
+    <div class="flow">
+      <span class="node">Browser (read-only)</span><span class="arrow">→</span>
+      <span class="node">RPC proxy (Edge Function)</span><span class="arrow">→</span>
+      <span class="node">Solana RPC</span>
+    </div>
+    <div class="flow">
+      <span class="node">Browser</span><span class="arrow">→</span>
+      <span class="node">Edge Function (verifies wallet signature)</span><span class="arrow">→</span>
+      <span class="node">Postgres (RLS, service-role writes only)</span>
+    </div>
+    <div class="badges">
+      <span class="badge">No private keys in the browser</span>
+      <span class="badge">RPC key server-side (rotatable)</span>
+      <span class="badge">Admin control = wallet signature verified server-side</span>
+      <span class="badge">Anti-replay nonces + freshness window</span>
+      <span class="badge">Row-Level Security: public read, no anon writes</span>
+      <span class="badge">Presence/chat are non-financial</span>
+    </div>
+    <p style="margin-top:12px">Full policy: <a href="/SECURITY.md">SECURITY.md</a> · Disclosure: <a href="/.well-known/security.txt">security.txt</a> · Report privately via <a target="_blank" rel="noopener" href="https://x.com/GodHatesSolana">@GodHatesSolana</a>.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span> · Independent audit &amp; remediation</h2>
+    <p>An independent technical review was run on the public code. Summary of findings and their current status:</p>
+    <table>
+      <tr><th>Item</th><th>Severity</th><th>Status</th></tr>
+      <tr><td>Broadcast admin control written directly from the browser</td><td>Critical</td><td class="ok">Fixed — moved to a signature-verifying Edge Function; table is read-only for anon</td></tr>
+      <tr><td>Replay / freshness of the signed command</td><td>Critical</td><td class="ok">Fixed — ±120s window + single-use nonce store</td></tr>
+      <tr><td>RPC provider key present in client JS</td><td>Medium</td><td class="ok">Fixed — calls go through a server-side RPC proxy; key rotatable</td></tr>
+      <tr><td>Supabase RLS too permissive</td><td>Medium</td><td class="ok">Fixed — writes require the service role; nonce table has no anon access</td></tr>
+      <tr><td>Missing security headers</td><td>Low</td><td class="ok">Added — HSTS, nosniff, frame options, referrer &amp; permissions policy</td></tr>
+      <tr><td>Roadmap features shown as if live (voting/rewards)</td><td>Low</td><td class="pending">In progress — clearly labeled PLANNED; off-chain signed voting being built</td></tr>
+      <tr><td>Public disclosure &amp; CI</td><td>Low</td><td class="ok">Added — SECURITY.md, security.txt, secret-scanning CI</td></tr>
+    </table>
+    <p style="margin-top:10px">Full report: <a href="/security/AUDIT.md">/security/AUDIT.md</a>.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span> · Official addresses</h2>
+    <p>Only these are official. Anything else is an impersonator.</p>
+    <table>
+      <tr><th>Purpose</th><th>Address</th></tr>
+      <tr><td>Token mint (CA)</td><td class="mono">3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump</td></tr>
+      <tr><td>Creator-fee wallet (verified deployer)</td><td class="mono ok">FWvajde3ghsZiCYMYoDNZkqmeicG59s1S8jow6sC1RGT</td></tr>
+      <tr><td>Charity recipient — St. Jude (via Pump.fun)</td><td class="mono ok">DApXFR4nXGp2Es1SJDkVSRX34bNiVMqXK65iAr2CUYhG</td></tr>
+      <tr><td>Manna distributor (weekly community rewards)</td><td class="mono ok">B4UrgQdGzNziECTAQNJeNuGvsV1Q8n8atsfRXAbuWACR</td></tr>
+    </table>
+    <p style="margin-top:8px;font-size:.85rem;color:var(--mut)">Wallets are kept separate on purpose: operational fees, donations and treasury never mix.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span> · Proof of Charity — St. Jude</h2>
+    <p><b>50% of every  creator fee is routed to St. Jude Children's Research Hospital automatically</b>, through Pump.fun's built-in Creator Fee Sharing. St. Jude is a native charity recipient on Pump.fun — the team never touches the charity half; it is sent on-chain by the protocol. Every distribution is public and verifiable below.</p>
+    <div class="badges"><span class="badge warn">Donations reach St. Jude via Pump.fun's official charity integration.  is an independent project — not affiliated with, endorsed by, or sponsored by St. Jude / ALSAC.</span></div>
+    <table>
+      <tr><th>Date</th><th>Amount</th><th>Solana tx (proof)</th></tr>
+      <tr><td>Aug 30, 2026</td><td>≈ 0.0115 SOL to St. Jude<br><small style="color:var(--mut)">(total distribution 0.0231 SOL)</small></td><td><a class="mono" target="_blank" rel="noopener" href="https://solscan.io/tx/5QnxLmhSXJPeNeszZRs8T8UWTaxbr9x8xE8rk4QMSg5tZo9nmFAYz1fuuTAz4FacEsKVeFQ7tTXCqT8jTL6RvWQQ">view tx ↗</a><br><a class="mono" target="_blank" rel="noopener" href="https://solscan.io/account/DApXFR4nXGp2Es1SJDkVSRX34bNiVMqXK65iAr2CUYhG">St. Jude wallet ↗</a></td></tr>
+    </table>
+  </section>
+
+  <p class="disc">$GHS is a meme/entertainment token with no intrinsic value and no expectation of profit. Crypto is extremely volatile and most memecoins go to zero. Nothing here is financial advice. Only spend what you can afford to lose entirely. Do your own research — start with the verification links above.</p>
+</div>
+<script>
+  document.getElementById('updated').textContent =
+    'Last updated: ' + new Date().toISOString().slice(0,10);
+  var cv=document.getElementById('chainv'); if(cv) cv.textContent='Verified on-chain via RPC · '+new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>

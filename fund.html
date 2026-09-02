@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fund Manna (owner) — $GHS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--grn:#14F195;--gold:#f5c542;--fire:#ff6a1a;--pur:#9945FF;--mut:#a99fc7}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(120% 90% at 50% -10%,#1a1030,#0a0713 60%);color:#e9e3ff;font-family:'Space Grotesk',system-ui,sans-serif;line-height:1.5}
+  .wrap{max-width:560px;margin:0 auto;padding:28px 18px 80px}
+  a{color:var(--grn);text-decoration:none}.back{color:var(--mut);font-size:.9rem}
+  h1{font-family:'Cinzel',serif;font-weight:800;font-size:1.6rem;margin:.3em 0 .1em}
+  .sub{color:var(--mut);margin:0 0 18px;font-size:.92rem}
+  .card{border:1px solid rgba(245,197,66,.5);border-radius:16px;background:rgba(20,14,4,.4);padding:18px}
+  label{display:block;font-size:.85rem;color:var(--mut);margin:12px 0 4px}
+  input{width:100%;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(10,7,19,.6);color:#fff;font-family:inherit;font-size:1rem}
+  .calc{margin:14px 0;font-family:'Cinzel',serif;font-weight:800;font-size:1.2rem;color:var(--gold)}
+  .btn{font-family:'Cinzel',serif;font-weight:700;border:none;border-radius:12px;padding:12px 18px;cursor:pointer;color:#1a0f00;background:linear-gradient(90deg,var(--fire),var(--gold));width:100%}
+  .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(153,69,255,.5)}
+  .btn:disabled{opacity:.5}
+  .status{margin-top:12px;min-height:1.3em;font-size:.9rem}
+  .note{font-size:.8rem;color:var(--mut);margin-top:16px}
+  .me{font-size:.82rem;color:var(--mut);margin:8px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← back</a>
+  <h1>✝ Fund Manna</h1>
+  <p class="sub">Owner tool. Sign ONE transaction to send this week's Manna to the distributor. Your key stays in your wallet — nothing is stored on a server.</p>
+
+  <div class="card">
+    <button class="btn ghost" id="connectBtn">Connect owner wallet</button>
+    <div class="me" id="me"></div>
+
+    <div id="form" style="display:none">
+      <label>Manna distributor wallet (saved locally)</label>
+      <input id="manna" placeholder="Paste your GHS Manna wallet address">
+      <label>Creator fees you claimed this week (SOL)</label>
+      <input id="fees" type="number" step="0.0001" placeholder="e.g. 0.20" oninput="calc()">
+      <div class="calc" id="calc">Manna (30%): — SOL</div>
+      <button class="btn" id="sendBtn">Sign &amp; send to Manna</button>
+      <div class="status" id="status"></div>
+    </div>
+  </div>
+  <p class="note">The other 50% of fees already goes to St. Jude automatically via Pump.fun. This tool sends 30% of <b>your</b> share to the Manna pool; the server then splits it equally among the last service's congregation and airdrops it (see the Ledger).</p>
+</div>
+<script type="module">
+import { PublicKey, SystemProgram, Transaction } from "https://esm.sh/@solana/web3.js@1.95.3";
+const SB="https://nhjochagueudgrbjjmbh.supabase.co";
+const KEY="sb_publishable_zzw2u309rbAZnKUuWeSzBA_XjE0C8Jx";
+const OWNER="FWvajde3ghsZiCYMYoDNZkqmeicG59s1S8jow6sC1RGT";
+const RPC=SB+"/functions/v1/rpc";
+const $=id=>document.getElementById(id);
+let PROV=null, ME=null;
+const short=a=>a.slice(0,4)+"…"+a.slice(-4);
+
+window.calc=function(){const f=parseFloat($("fees").value)||0;$("calc").textContent="Manna (30%): "+(f*0.30).toFixed(4)+" SOL";};
+
+$("manna").value=localStorage.getItem("ghs_manna_wallet")||"";
+(async()=>{try{const r=await fetch(SB+"/rest/v1/app_config?key=eq.manna_wallet&select=value",{headers:{apikey:KEY,Authorization:"Bearer "+KEY}});const j=await r.json();if(j[0]&&j[0].value&&!$("manna").value){$("manna").value=j[0].value;}}catch(e){}})();
+$("manna")&&$("manna").addEventListener("change",()=>localStorage.setItem("ghs_manna_wallet",$("manna").value.trim()));
+
+function getProv(){return (window.phantom&&window.phantom.solana)||((window.solana&&window.solana.isPhantom)?window.solana:null)||((window.solflare&&window.solflare.isSolflare)?window.solflare:null);}
+$("connectBtn").onclick=async()=>{
+  const p=getProv();
+  if(!p){ if(/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)){location.href='https://phantom.app/ul/browse/'+encodeURIComponent(location.href)+'?ref='+encodeURIComponent(location.origin);return;} $("me").innerHTML='No wallet found.'; return; }
+  try{ const r=await p.connect(); PROV=p; ME=(p.publicKey||r.publicKey).toString();
+    if(ME!==OWNER){ $("me").innerHTML='This is an <b>owner-only</b> tool. Connected wallet is not the owner.'; return; }
+    $("me").textContent="Owner connected: "+short(ME); $("connectBtn").style.display="none"; $("form").style.display="block";
+  }catch(e){ $("me").textContent="Connection refused."; }
+};
+
+async function blockhash(){
+  const r=await fetch(RPC,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({jsonrpc:'2.0',id:1,method:'getLatestBlockhash',params:[{commitment:'finalized'}]})});
+  const j=await r.json(); return j.result.value.blockhash;
+}
+
+$("sendBtn").onclick=async()=>{
+  if(!PROV||ME!==OWNER)return;
+  const mannaAddr=$("manna").value.trim(); const fees=parseFloat($("fees").value)||0;
+  if(!mannaAddr){$("status").textContent="Enter the Manna wallet address.";return;}
+  const amt=+(fees*0.30).toFixed(6); if(amt<=0){$("status").textContent="Enter this week's claimed fees.";return;}
+  try{
+    localStorage.setItem("ghs_manna_wallet",mannaAddr);
+    $("status").textContent="Preparing…"; $("sendBtn").disabled=true;
+    const to=new PublicKey(mannaAddr), from=new PublicKey(ME);
+    const tx=new Transaction().add(SystemProgram.transfer({fromPubkey:from,toPubkey:to,lamports:Math.round(amt*1e9)}));
+    tx.feePayer=from; tx.recentBlockhash=await blockhash();
+    $("status").textContent="Sign in your wallet…";
+    const res=await PROV.signAndSendTransaction(tx);
+    const sig=res.signature||res;
+    $("status").innerHTML='Sent '+amt+' SOL to Manna ✓ &middot; <a target="_blank" rel="noopener" href="https://solscan.io/tx/'+sig+'">view tx ↗</a>';
+  }catch(e){ $("status").textContent="Failed / cancelled: "+(e.message||e); }
+  finally{ $("sendBtn").disabled=false; }
+};
+</script>
+</body>
+</html>

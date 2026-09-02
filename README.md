@@ -1,5 +1,11 @@
 # ✝ GodHatesSolana — $GHS
 
+[![Security policy](https://img.shields.io/badge/security-policy-9945FF)](./SECURITY.md)
+[![RugCheck](https://img.shields.io/badge/RugCheck-verify%20live-14F195)](https://rugcheck.xyz/tokens/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump)
+[![Secret scan](https://github.com/GodHatesSolana/GodHatesSolana/actions/workflows/security.yml/badge.svg)](../../actions/workflows/security.yml)
+[![No custom contract](https://img.shields.io/badge/smart%20contract-none%20(standard%20SPL)-f5c542)](https://solscan.io/token/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump)
+
+
 > A spite-fueled memecoin for heretics with a bag. Every green candle angers a deity — so we pump it anyway.
 
 **$GHS** is a community memecoin on Solana / Pump.fun. Holders hold the power:
@@ -31,6 +37,13 @@ endorsed by, or sponsored by St. Jude or ALSAC.*
 ## Tech
 Single-file HTML/CSS/JS site · Three.js (3D church) · Supabase Realtime
 (multiplayer) · Solana JSON-RPC (on-chain balances). Hosted on Netlify.
+
+## 🔐 Security & Transparency
+- **Verify the token live:** [RugCheck](https://rugcheck.xyz/tokens/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump) · [Solsniffer](https://www.solsniffer.com/scanner/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump) · [GoPlus](https://gopluslabs.io/token-security/solana/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump) · [Solscan](https://solscan.io/token/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump)
+- **Transparency page:** [`/transparency.html`](https://godhatessolana.netlify.app/transparency.html) — architecture, audit status, official wallets, Proof of Charity.
+- **Audit report:** [`/security/AUDIT.md`](./security/AUDIT.md)
+- **Disclosure:** [`SECURITY.md`](./SECURITY.md) · [`/.well-known/security.txt`](./.well-known/security.txt)
+- **App security:** RPC key server-side (proxy), admin control verified by wallet signature in an Edge Function, Postgres RLS (public read, no anon writes), security headers.
 
 ## ⚠️ Disclaimer
 $GHS is a meme/entertainment token with **no intrinsic value and no expectation

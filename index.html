@@ -287,14 +287,22 @@ footer{border-top:1px solid rgba(153,69,255,.22);padding:54px 22px 40px;text-ali
   <div class="hero-bg"></div>
   <div class="hero-veil"></div>
   <div class="hero-inner">
+    <div id="launchBanner" style="text-align:center;margin:0 0 18px;padding:12px 16px;border:1px solid rgba(245,197,66,.5);border-radius:16px;background:linear-gradient(180deg,rgba(245,197,66,.08),rgba(10,7,19,.4))">
+      <div style="font-family:'Cinzel',serif;font-weight:800;letter-spacing:1px;color:#f5c542">&#9962; OFFICIAL LAUNCH &mdash; SATURDAY 8:00 PM ET</div>
+      <div id="launchCount" style="font-family:'Cinzel',serif;font-weight:800;font-size:1.6rem;letter-spacing:2px;color:#fff;margin-top:6px">&mdash;</div>
+      <div style="font-size:.78rem;color:#c9b6ff;opacity:.8;margin-top:4px">The doors of the Church open. Repent while you still can.</div>
+    </div>
+    <script>(function(){var L=new Date("2026-09-05T20:00:00-04:00").getTime();var el=document.getElementById('launchCount');if(!el)return;function t(){var ms=L-Date.now();if(ms<=0){el.textContent='THE DOORS ARE OPEN';return;}var d=Math.floor(ms/86400000),h=Math.floor(ms/3600000)%24,m=Math.floor(ms/60000)%60,s=Math.floor(ms/1000)%60;el.textContent=(d>0?d+'d ':'')+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}t();setInterval(t,1000);})();</script>
     <div class="church-cta">
       <a class="church-btn observe" href="church.html?watch=1" target="_blank" rel="noopener"><span class="k">&#128065; Observe</span><span class="s">Watch the church</span></a>
       <a class="church-btn repent" href="church.html" target="_blank" rel="noopener"><span class="k">&#10013; Repent</span><span class="s">Enter &amp; be seen</span></a>
     </div>
+    <p style="text-align:center;margin:-10px 0 20px;font-size:.82rem;letter-spacing:.4px;color:#c9b6ff;opacity:.8">🕯️ Confessions &middot; <b>Saturdays 8–9 PM ET</b></p>
+    <p style="text-align:center;margin:-14px 0 22px;font-size:.82rem"><a href="vote.html" style="color:#c9a0ff;text-decoration:none">🗳️ Vote</a> &nbsp;·&nbsp; <a href="ledger.html" style="color:#f5c542;text-decoration:none">📜 Ledger</a> &nbsp;·&nbsp; <a href="transparency.html" style="color:#14F195;text-decoration:none">🔍 Transparency</a></p>
     <span class="chip">✝ The coin God warned you about</span>
     <div class="give">
       <span class="give-i">✝</span>
-      <span><b>50%</b> of creator fees donated to St. Jude</span>
+      <span><b>50%</b> of creator fees auto-donated to St. Jude · verifiable on-chain</span>
     </div>
     <h1>GOD HATES<br><span class="grad">SOLANA</span></h1>
     <p class="sub">A spite-fueled memecoin for heretics with a bag. Every green candle angers a deity — so we pump it anyway.</p>
@@ -375,7 +383,7 @@ footer{border-top:1px solid rgba(153,69,255,.22);padding:54px 22px 40px;text-ali
   <div class="panel" id="roy">
     <p class="lead">$GHS earns creator royalties on trading. <b style="color:var(--grn)">Half is donated to St. Jude</b> — the rest flows back to the faithful, not into one pocket.</p>
     <div class="row">
-      <div class="mini"><h4>The Tithe (charity)</h4><p>50% of creator fees are donated to St. Jude Children's Research Hospital and reported transparently. Heresy with a conscience.</p></div>
+      <div class="mini"><h4>The Tithe (charity)</h4><p>50% of every  creator fee goes to St. Jude Children's Research Hospital automatically, via Pump.fun's built-in Creator Fee Sharing — the team never touches the charity half. Every donation is on-chain and verifiable. Independent project, not affiliated with St. Jude. Heresy with a conscience.</p></div>
       <div class="mini"><h4>Buyback &amp; burn</h4><p>Royalties can fund buybacks that reduce supply — voted on by holders.</p></div>
       <div class="mini"><h4>Redistribution</h4><p>Or route royalties back to holders, weighted by hierarchy rank. The community decides the split.</p></div>
       <div class="mini"><h4>On-chain &amp; public</h4><p>Every move is visible. Transparency is the anti-rug.</p></div>
@@ -408,25 +416,38 @@ footer{border-top:1px solid rgba(153,69,255,.22);padding:54px 22px 40px;text-ali
 </div></section>
 
 <!-- ROADMAP -->
+<section id="manna"><div class="wrap reveal">
+  <span class="eyebrow">Manna from Heaven</span>
+  <h2 class="title">Show up. Prove your faith. <span style="color:#14F195">Receive Manna.</span></h2>
+  <p class="lead">Each Saturday the Church opens, the faithful who attend and pass <b>The Rite</b> share a portion of creator fees — split <b>equally</b>, airdropped <b>automatically</b>, recorded <b>on-chain</b>. No claim, no whales, no yield-talk: a community reward for being in the pews.</p>
+  <div class="road" style="margin-top:28px">
+    <div class="stop"><div class="ph">1 · Attend</div><h3>Enter the live</h3><ul><li>Open the Church on Saturdays, 8–9 PM ET</li><li>Connect a wallet holding $GHS</li></ul></div>
+    <div class="stop"><div class="ph">2 · The Rite</div><h3>Prove you're human</h3><ul><li>Within 5 minutes, God commands a random rite</li><li>Perform it in time — no bots, no signature</li></ul></div>
+    <div class="stop"><div class="ph">3 · Manna</div><h3>Equal share, auto-airdropped</h3><ul><li>That service's congregation splits the pool equally</li><li>Sent automatically — verify every payout on the Ledger</li></ul></div>
+  </div>
+  <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap">
+    <a class="btn" href="ledger.html">📜 View the Congregation Ledger</a>
+    <a class="btn ghost" href="vote.html">🗳️ The Voice — Vote</a>
+    <a class="btn ghost" href="transparency.html">🔍 Transparency &amp; Security</a>
+  </div>
+</div></section>
 <section id="roadmap"><div class="wrap reveal">
   <span class="eyebrow">The Ascension</span>
   <h2 class="title">A roadmap from Hell to the <span class="gradfire">Heavens.</span></h2>
   <p class="lead">Every phase climbs a little closer to the sky — the better to flip Him off on arrival. And because prophets lie, we wrote the fallback plan too.</p>
   <div class="road" style="margin-top:34px">
     <div class="stop"><div class="ph">Phase 0 · Genesis</div><h3>The Spark</h3>
-      <ul><li>Fair launch on Pump.fun</li><li>Logo, site &amp; X live</li><li>First 100 heretics gather</li></ul></div>
-    <div class="stop"><div class="ph">Phase I · The Congregation</div><h3>Gather the Faithless</h3>
-      <ul><li>Meme army &amp; Crypto-Twitter raids</li><li>Telegram / community rituals</li><li>First holder milestones</li></ul></div>
-    <div class="stop"><div class="ph">Phase II · The Reckoning</div><h3>Graduate the Curve</h3>
-      <ul><li>Fill the bonding curve, migrate to PumpSwap</li><li>DexScreener / trackers updated &amp; trending</li><li>Liquidity secured and visible</li></ul></div>
-    <div class="stop"><div class="ph">Phase III · The Covenant</div><h3>Holder Power Goes Live</h3>
-      <ul><li>Voting portal opens — weighted by the Divine Hierarchy</li><li>Community treasury formed</li><li>First on-chain decisions &amp; reward multipliers live</li></ul></div>
-    <div class="stop"><div class="ph">Phase IV · The Offering</div><h3>Half the fees, given to charity</h3>
-      <ul><li>50% of creator fees donated to St. Jude Children's Research Hospital</li><li>Every donation reported transparently — on-chain &amp; public</li></ul></div>
-    <div class="stop"><div class="ph">Phase V · The Rapture</div><h3>Rewards &amp; Halo Tiers</h3>
-      <ul><li>Rank-based loyalty tiers &amp; the Faithful list</li><li>Raffles, airdrops, meme bounties</li></ul></div>
-    <div class="stop"><div class="ph">Phase VI · Judgment Day</div><h3>Flip the Sky</h3>
-      <ul><li>Bigger listings &amp; collabs</li><li>A meme moment loud enough to reach Heaven</li></ul></div>
+      <ul><li>Fair launch on Pump.fun</li><li>Mint &amp; freeze authority renounced — supply fixed</li><li>50% of creator fees auto-donated to St. Jude</li><li>Site &amp; 3D Church built</li></ul></div>
+    <div class="stop"><div class="ph">Phase I · Consecration</div><h3>Make it verifiable</h3>
+      <ul><li>Security hardened: server-side controls, RLS, RPC proxy, CSP</li><li>Transparency &amp; Security page + published audit</li><li>Proof of Charity live · doors sealed with a countdown</li></ul></div>
+    <div class="stop"><div class="ph">Phase II · The Opening</div><h3>Official launch — Saturday</h3>
+      <ul><li>The Church opens weekly — Saturdays 8–9 PM ET (1h)</li><li>The service auto-broadcasts to Pump.fun Live</li><li>Observe from above, or Repent and be seen</li></ul></div>
+    <div class="stop"><div class="ph">Phase III · Manna</div><h3>Reward the faithful</h3>
+      <ul><li>Attend the live &amp; pass <b>The Rite</b> (anti-bot, no signature)</li><li>A share of creator fees split <b>equally</b> among that service's congregation, airdropped automatically</li><li>Every day recorded on-chain in the <b>Congregation Ledger</b></li></ul></div>
+    <div class="stop"><div class="ph">Phase IV · The Voice</div><h3>Holders decide — live</h3>
+      <ul><li>Wallet-signed voting portal is <b>live</b> — weighted by your $GHS bag</li><li>Vote on themes, donations &amp; direction; verified server-side (no bots)</li></ul></div>
+    <div class="stop"><div class="ph">Phase V · The Covenant</div><h3>Trustless &amp; eternal</h3>
+      <ul><li>Audited on-chain program for Manna (immutable, post-audit)</li><li>Soulbound "Relic" attendance badges</li><li>Deeper charity milestones &amp; collabs</li></ul></div>
 
     <div class="fallback">
       <div class="ph" style="font-family:var(--black);font-size:22px">😈 Purgatory Protocol — if the prophecy fails</div>

@@ -68,6 +68,25 @@ canvas{display:block}
 #livebadge b{color:#ff3b3b}
 body.watch #livebadge{display:block}
 body.watch #joy,body.watch #emotes,body.watch #chatBtn,body.watch #chatbar,body.watch #fsBtn,body.watch .panel,body.watch .hint{display:none!important}
+
+#sealed{position:fixed;inset:0;z-index:9999;display:none;place-items:center;text-align:center;padding:24px;background:radial-gradient(120% 90% at 50% -10%,#1a1030,#0a0713 62%)}
+#sealed.show{display:grid}
+.sealed-cross{font-size:64px;color:#f5c542;text-shadow:0 0 34px rgba(245,197,66,.55)}
+.sealed-title{font-family:'Cinzel',serif;font-weight:800;font-size:1.7rem;letter-spacing:1.5px;margin-top:10px;color:#fff}
+.sealed-sub{color:#c9b6ff;opacity:.82;margin-top:8px}
+.sealed-when{margin-top:10px;color:#14F195;font-weight:700;letter-spacing:.5px}
+.sealed-count{font-family:'Cinzel',serif;font-weight:800;font-size:2.3rem;letter-spacing:3px;margin-top:14px;color:#f5c542}
+.sealed-foot{margin-top:18px;color:#a99fc7;font-size:.85rem}
+
+#rite{position:absolute;top:64px;left:50%;transform:translateX(-50%);z-index:60;display:none;pointer-events:none;text-align:center;width:min(340px,88vw)}
+#rite.show{display:block;animation:ritepop .3s ease}
+.rite-box{background:rgba(10,7,19,.9);border:1px solid rgba(245,197,66,.65);border-radius:16px;padding:14px 16px;box-shadow:0 10px 40px rgba(245,197,66,.18)}
+.rite-title{font-family:'Cinzel',serif;font-weight:800;color:#f5c542;letter-spacing:2px}
+.rite-cmd{color:#c9b6ff;font-size:.85rem;margin-top:6px}
+.rite-emote{font-size:46px;margin:6px 0;filter:drop-shadow(0 0 12px rgba(245,197,66,.5))}
+.rite-hint{color:#a99fc7;font-size:.82rem}.rite-hint span{color:#14F195;font-weight:700}
+.rite-msg{margin-top:8px;font-weight:600;color:#fff}
+@keyframes ritepop{from{transform:translateX(-50%) scale(.85);opacity:0}to{transform:translateX(-50%) scale(1);opacity:1}}
 </style>
 </head>
 <body>
@@ -84,6 +103,7 @@ body.watch #joy,body.watch #emotes,body.watch #chatBtn,body.watch #chatbar,body.
   <div id="livebadge">⛪ CHURCH OF $GHS · <b>LIVE</b></div>
   <div id="chatlog"></div>
   <div id="emotes"><button data-e="😇">😇</button><button data-e="🔥">🔥</button><button data-e="😈">😈</button><button data-e="🙏">🙏</button><button data-e="💎">💎</button><button data-e="⚡">⚡</button></div>
+  <div id="rite"><div class="rite-box"><div class="rite-title">&#9769; THE RITE &#9769;</div><div class="rite-cmd">God commands you to show your faith:</div><div class="rite-emote" id="riteEmote">&#128591;</div><div class="rite-hint">Tap that emote below &middot; <span id="riteCount">25</span>s</div><div class="rite-msg" id="riteMsg"></div></div></div>
   <button id="chatBtn">💬</button>
   <div id="chatbar"><input id="chatInput" maxlength="120" placeholder="Say something to the congregation…" autocomplete="off"><button id="chatSend">Send</button></div>
   <div id="joy"><div class="nub" id="joyNub"></div></div>
@@ -93,6 +113,7 @@ body.watch #joy,body.watch #emotes,body.watch #chatBtn,body.watch #chatbar,body.
     <span class="gate-chip">✝ Consecrated ground</span>
     <h1>Enter the <span class="grad">Church of $GHS</span></h1>
     <p class="sub">Connect a Solana wallet holding $GHS (Phantom or Solflare). The heavier your bag, the larger you stand before God.</p>
+    <p class="sub" style="opacity:.75;font-size:.9rem">🕯️ Confessions are heard nightly, <b>8–9 PM ET</b> (US prime time).</p>
     <div class="gate-row"><button class="btn" id="btnPhantom">Phantom</button><button class="btn ghost" id="btnSolflare">Solflare</button></div>
     <div class="tier-badge" id="tierBadge"><div class="t" id="tierName">—</div><div class="b" id="tierBal">—</div></div>
     <div class="gate-row" style="margin-top:18px"><button class="btn" id="enterBtn" style="display:none">Enter the church</button></div>
@@ -117,11 +138,13 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 /* ============================ CONFIG — edit these ============================ */
 const CFG = {
   ca: "3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump",   // $GHS mint
-  rpc: "https://mainnet.helius-rpc.com/?api-key=bd0976dc-03eb-4121-8ec2-740e6e70801e", // Helius RPC
+  rpc: "https://nhjochagueudgrbjjmbh.supabase.co/functions/v1/rpc", // server-side RPC proxy (Helius key stays in the Edge Function)
   minHold: 1,                                           // min $GHS to enter
   supabaseUrl: "https://nhjochagueudgrbjjmbh.supabase.co", // Supabase Project URL
   supabaseAnon: "sb_publishable_zzw2u309rbAZnKUuWeSzBA_XjE0C8Jx", // Supabase publishable (public) key
   owner: "FWvajde3ghsZiCYMYoDNZkqmeicG59s1S8jow6sC1RGT",   // owner wallet (ON/OFF button shows only for this wallet)
+  launch: "2026-09-05T20:00:00-04:00",     // first service / official launch (Sat 8 PM ET)
+  openUntil: "2026-09-05T21:00:00-04:00",  // church stays open until here; after that it opens weekly (Sat 20:00-21:00 ET). ?preview=1 forces open.
   sizeMin: 0.9, sizeMax: 2.2, sizeRef: 20000000         // avatar bag-scale range
 };
 /* ============================================================================ */
@@ -258,7 +281,21 @@ function emoteTex(e){const c=document.createElement('canvas');c.width=c.height=1
   x.font='96px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",serif';x.textAlign='center';x.textBaseline='middle';x.fillText(e,64,72);return new THREE.CanvasTexture(c);}
 function showEmote(group,e){if(!group)return;const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:emoteTex(e),transparent:true,depthTest:false}));
   sp.scale.set(1.3,1.3,1);sp.position.y=3.9;group.add(sp);emotesActive.push({sp,group,born:performance.now()});}
-function sendEmote(e){showEmote(me,e);if(channel)channel.send({type:'broadcast',event:'emote',payload:{id:myState.addr,e}});}
+let riteActive=false,riteTarget=null,riteTimer=null,riteDone=false;
+const RITE_EMOTES=['🙏','🔥','😇','⚡'];
+function scheduleRite(){if(riteDone)return;setTimeout(showRite,8000+Math.random()*292000);}
+function showRite(){if(riteDone||!me)return;riteTarget=RITE_EMOTES[Math.floor(Math.random()*RITE_EMOTES.length)];riteActive=true;
+  document.getElementById('riteEmote').textContent=riteTarget;document.getElementById('riteMsg').textContent='';
+  document.getElementById('rite').classList.add('show');let left=25;document.getElementById('riteCount').textContent=left;
+  riteTimer=setInterval(()=>{left--;document.getElementById('riteCount').textContent=left;if(left<=0)riteFail();},1000);}
+function riteFail(){clearInterval(riteTimer);riteActive=false;riteDone=true;
+  document.getElementById('riteMsg').innerHTML='You failed the Rite. <b>No Manna today.</b>';
+  setTimeout(()=>document.getElementById('rite').classList.remove('show'),2800);}
+function ritePass(){clearInterval(riteTimer);riteActive=false;riteDone=true;
+  document.getElementById('riteMsg').innerHTML='&#10013; <b>Blessed.</b> Your presence is recorded.';recordAttendance(riteTarget);
+  setTimeout(()=>document.getElementById('rite').classList.remove('show'),2800);}
+async function recordAttendance(action){try{await fetch(_SB+'/functions/v1/record-attendance',{method:'POST',headers:{apikey:_SK,Authorization:'Bearer '+_SK,'Content-Type':'application/json'},body:JSON.stringify({wallet:myState.addr,action})});}catch(e){}}
+function sendEmote(e){if(riteActive&&e===riteTarget)ritePass();showEmote(me,e);if(channel)channel.send({type:'broadcast',event:'emote',payload:{id:myState.addr,e}});}
 function positionChatbar(){if(!chatting)return;let kb=0;if(window.visualViewport)kb=Math.max(0,innerHeight-visualViewport.height-visualViewport.offsetTop);const base=(/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent))?72:24;$('chatbar').style.bottom=(kb>4?kb+12:base)+'px';}
 function openChat(){chatting=true;$('chatbar').style.display='flex';$('joy').style.display='none';$('emotes').style.display='none';$('chatBtn').style.display='none';for(const k in keys)keys[k]=false;move.f=0;move.s=0;$('chatInput').focus();positionChatbar();setTimeout(positionChatbar,250);setTimeout(positionChatbar,600);}
 function closeChat(){chatting=false;$('chatbar').style.display='none';$('chatbar').style.bottom='';$('joy').style.display='';$('emotes').style.display='';$('chatBtn').style.display='';$('chatInput').blur();}
@@ -321,7 +358,9 @@ function enterChurch(addr,bal,{demo,watch}={}){
   addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
   document.getElementById('hud').style.display='block';
   if(watch)document.body.classList.add('watch');
-  setTimeout(()=>document.getElementById('loading').style.display='none',400);animate();
+  setTimeout(()=>document.getElementById('loading').style.display='none',400);
+  if(!watch&&!demo&&(isServiceWindow()||previewMode))scheduleRite();
+  animate();
 }
 
 const fwd=new THREE.Vector3(),rgt=new THREE.Vector3(),tmp=new THREE.Vector3();
@@ -352,7 +391,7 @@ function animate(){requestAnimationFrame(animate);const dt=Math.min(0.05,clock.g
 
 const $=id=>document.getElementById(id);
 async function getBalance(owner){const body={jsonrpc:"2.0",id:1,method:"getTokenAccountsByOwner",params:[owner,{mint:CFG.ca},{encoding:"jsonParsed"}]};
-  const r=await fetch(CFG.rpc,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const j=await r.json();let b=0;
+  const r=await fetch(CFG.rpc,{method:"POST",headers:{"Content-Type":"application/json",apikey:CFG.supabaseAnon,Authorization:"Bearer "+CFG.supabaseAnon},body:JSON.stringify(body)});const j=await r.json();let b=0;
   (j.result?.value||[]).forEach(a=>b+=parseFloat(a.account.data.parsed.info.tokenAmount.uiAmount||0));return b;}
 let pAddr=null,pBal=0;
 function isMobile(){return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);}
@@ -380,10 +419,9 @@ async function setMode(mode){const prov=CONNPROV;if(!prov||!prov.signMessage){$(
     const ts=Math.floor(Date.now()/1000);const msg='GHS-STREAM|'+mode+'|'+ts;
     const out=await prov.signMessage(new TextEncoder().encode(msg),'utf8');const sig=out.signature||out;
     const sigB64=btoa(String.fromCharCode.apply(null,sig));
-    const body={id:1,mode,ts,message:msg,sig:sigB64,pub:CFG.owner,updated_at:new Date().toISOString()};
-    const r=await fetch(_SB+'/rest/v1/stream_control?on_conflict=id',{method:'POST',headers:{apikey:_SK,Authorization:'Bearer '+_SK,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(body)});
-    if(r.ok)$('ownerStatus').innerHTML='Broadcast set to <b>'+mode.toUpperCase()+'</b> ✓ (signed)';
-    else $('ownerStatus').textContent='Save failed ('+r.status+'). Did you run the SQL table?';
+    const r=await fetch(_SB+'/functions/v1/set-stream-mode',{method:'POST',headers:{apikey:_SK,Authorization:'Bearer '+_SK,'Content-Type':'application/json'},body:JSON.stringify({mode,ts,message:msg,sig:sigB64,pub:CFG.owner})});
+    if(r.ok)$('ownerStatus').innerHTML='Broadcast set to <b>'+mode.toUpperCase()+'</b> ✓ (verified server-side)';
+    else{let t='';try{t=(await r.json()).msg||'';}catch(e){}$('ownerStatus').textContent='Rejected ('+r.status+'). '+t;}
   }catch(e){$('ownerStatus').textContent='Cancelled.';}}
 function showOwnerPanel(){$('ownerPanel').style.display='block';fetchMode().then(m=>{$('ownerStatus').textContent=m?('Current mode: '+String(m.mode).toUpperCase()):'Current mode: (not set yet) — tap a button';});}
 document.querySelectorAll('#ownerPanel .obtn').forEach(b=>b.addEventListener('click',()=>setMode(b.getAttribute('data-mode'))));
@@ -391,8 +429,48 @@ $('btnPhantom').addEventListener('click',()=>connectWith('phantom'));
 $('btnSolflare').addEventListener('click',()=>connectWith('solflare'));
 $('enterBtn').addEventListener('click',()=>{if(pAddr)enterChurch(pAddr,pBal,{});});
 $('demoLink').addEventListener('click',e=>{e.preventDefault();enterChurch('ghost'+Math.floor(Math.random()*1e6),250000,{demo:true});});
-{const _q=new URLSearchParams(location.search);if(_q.get('watch'))enterChurch('watcher',0,{watch:true});else if(_q.get('demo'))enterChurch('demoWanderer42',250000,{demo:true});}
+let previewMode=false;
+function etParts(d){d=d||new Date();const wm={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+  const wd=wm[new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'short'}).format(d)];
+  const hr=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'numeric',hour12:false}).format(d))%24;
+  return{wd,hr};}
+function isServiceWindow(){const p=etParts();return p.wd===6&&p.hr>=20&&p.hr<21;}
+function churchOpen(){try{if(Date.now()<new Date(CFG.openUntil).getTime())return true;}catch(e){}return isServiceWindow();}
+function nextServiceTs(){const now=Date.now();
+  for(let i=0;i<9;i++){const d=new Date(now+i*86400000);if(etParts(d).wd!==6)continue;
+    const day=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York'}).format(d);
+    for(let h=0;h<50;h++){const cand=new Date(day+'T00:00:00Z').getTime()+h*3600000;
+      const cd=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York'}).format(new Date(cand));
+      const ch=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'numeric',hour12:false}).format(new Date(cand)))%24;
+      if(cd===day&&ch===20&&cand>now)return cand;}}
+  return now;}
+(function initGate(){
+  const q=new URLSearchParams(location.search);
+  previewMode=q.get('preview')==='1';
+  if(!churchOpen()&&!previewMode){
+    const g=document.getElementById('gate'); if(g)g.style.display='none';
+    document.getElementById('sealed').classList.add('show');
+    const target=nextServiceTs();
+    function tick(){const ms=target-Date.now();
+      if(ms<=0){location.reload();return;}
+      const d=Math.floor(ms/86400000),h=Math.floor(ms/3600000)%24,m=Math.floor(ms/60000)%60,sec=Math.floor(ms/1000)%60;
+      document.getElementById('sealedCount').textContent=(d>0?d+'d ':'')+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');}
+    tick(); setInterval(tick,1000); return;
+  }
+  if(q.get('watch'))enterChurch('watcher',0,{watch:true});
+  else if(q.get('demo'))enterChurch('demoWanderer42',250000,{demo:true});
+})();
 try{const t=document.createElement('canvas').getContext('webgl2')||document.createElement('canvas').getContext('webgl');if(!t)$('gateStatus').textContent='Your browser has no WebGL — the church needs it.';}catch(_){}
 </script>
+<div id="sealed">
+  <div class="sealed-box">
+    <div class="sealed-cross">&#10013;</div>
+    <div class="sealed-title">THE DOORS ARE CLOSED</div>
+    <div class="sealed-sub">The next service begins in</div>
+    <div class="sealed-when">Saturdays &middot; 8:00 PM ET</div>
+    <div class="sealed-count" id="sealedCount">&mdash;</div>
+    <div class="sealed-foot">Repent while you still can. &#128520;</div>
+  </div>
+</div>
 </body>
 </html>
