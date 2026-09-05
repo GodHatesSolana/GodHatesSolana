@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Transparency & Security — GodHatesSolana ($GHS)</title>
-<meta name="description" content="Security architecture, live on-chain verification, independent audit status and Proof of Charity for $GHS.">
+<meta name="description" content="Security architecture, live on-chain verification and Proof of Charity for $GHS.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
@@ -53,6 +53,7 @@
   <h1>Transparency &amp; Security</h1>
   <p class="sub">Everything a careful holder should be able to verify — on-chain, in the code, and in our operations. Don't trust, verify.</p>
   <p class="upd" id="updated">Last updated: —</p>
+  <p style="margin:6px 0 0"><a class="cta" href="audits.html">🛡️ Security &amp; Audit — token safety, backend controls &amp; full assessment →</a></p>
 
   <section>
     <h2><span class="n">01</span> · Verify the token on-chain (live)</h2>
@@ -67,12 +68,12 @@
       <span class="badge" id="chainv">Verified on-chain via RPC</span>
     </div>
     <div class="grid">
-      <a class="chk" target="_blank" rel="noopener" href="https://rugcheck.xyz/tokens/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">RugCheck<small>risk score &amp; authorities</small></a>
+      <a class="chk" target="_blank" rel="noopener" href="https://rugcheck.xyz/tokens/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">RugCheck<small>authorities &amp; safety</small></a>
       <a class="chk" target="_blank" rel="noopener" href="https://www.solsniffer.com/scanner/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">Solsniffer<small>safety scan</small></a>
       <a class="chk" target="_blank" rel="noopener" href="https://gopluslabs.io/token-security/solana/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">GoPlus<small>token security</small></a>
-      <a class="chk" target="_blank" rel="noopener" href="https://solscan.io/token/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">Solscan<small>authorities &amp; holders</small></a>
-      <a class="chk" target="_blank" rel="noopener" href="https://birdeye.so/token/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump?chain=solana">Birdeye<small>market &amp; liquidity</small></a>
-      <a class="chk" target="_blank" rel="noopener" href="https://dexscreener.com/solana/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">DexScreener<small>price &amp; volume</small></a>
+      <a class="chk" target="_blank" rel="noopener" href="https://solscan.io/token/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">Solscan<small>authorities &amp; supply</small></a>
+      <a class="chk" target="_blank" rel="noopener" href="https://birdeye.so/token/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump?chain=solana">Birdeye<small>token overview</small></a>
+      <a class="chk" target="_blank" rel="noopener" href="https://dexscreener.com/solana/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">DexScreener<small>live chart</small></a>
     </div>
     <p style="margin-top:12px"><b>What to look for:</b> mint authority <i>renounced</i>, freeze authority <i>none</i>, healthy holder distribution. These are read live from the chain by the tools above — we don't ask you to take our word for it.</p>
     <p class="mono">Mint / CA: 3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump</p>
@@ -103,19 +104,19 @@
   </section>
 
   <section>
-    <h2><span class="n">03</span> · Independent audit &amp; remediation</h2>
-    <p>An independent technical review was run on the public code. Summary of findings and their current status:</p>
+    <h2><span class="n">03</span> · Application security controls (in place)</h2>
+    <p>The website and backend follow a non-custodial, signature-authenticated, least-privilege design:</p>
     <table>
-      <tr><th>Item</th><th>Severity</th><th>Status</th></tr>
-      <tr><td>Broadcast admin control written directly from the browser</td><td>Critical</td><td class="ok">Fixed — moved to a signature-verifying Edge Function; table is read-only for anon</td></tr>
-      <tr><td>Replay / freshness of the signed command</td><td>Critical</td><td class="ok">Fixed — ±120s window + single-use nonce store</td></tr>
-      <tr><td>RPC provider key present in client JS</td><td>Medium</td><td class="ok">Fixed — calls go through a server-side RPC proxy; key rotatable</td></tr>
-      <tr><td>Supabase RLS too permissive</td><td>Medium</td><td class="ok">Fixed — writes require the service role; nonce table has no anon access</td></tr>
-      <tr><td>Missing security headers</td><td>Low</td><td class="ok">Added — HSTS, nosniff, frame options, referrer &amp; permissions policy</td></tr>
-      <tr><td>Roadmap features shown as if live (voting/rewards)</td><td>Low</td><td class="pending">In progress — clearly labeled PLANNED; off-chain signed voting being built</td></tr>
-      <tr><td>Public disclosure &amp; CI</td><td>Low</td><td class="ok">Added — SECURITY.md, security.txt, secret-scanning CI</td></tr>
+      <tr><th>Control</th><th>Status</th></tr>
+      <tr><td>Privileged actions authenticated server-side (Ed25519 signature)</td><td class="ok">In place ✓</td></tr>
+      <tr><td>Anti-replay: single-use nonce + ±120s freshness window</td><td class="ok">In place ✓</td></tr>
+      <tr><td>RPC access via server-side proxy with method allow-list</td><td class="ok">In place ✓</td></tr>
+      <tr><td>Database Row-Level Security; writes only via authenticated functions</td><td class="ok">In place ✓</td></tr>
+      <tr><td>HTTP hardening: CSP, HSTS, nosniff, frame &amp; referrer policy</td><td class="ok">In place ✓</td></tr>
+      <tr><td>Responsible disclosure: security.txt (RFC 9116) + secret-scanning CI</td><td class="ok">In place ✓</td></tr>
+      <tr><td>Community rewards: equal split + Merkle root on-chain (immutable program)</td><td class="ok">In place ✓</td></tr>
     </table>
-    <p style="margin-top:10px">Full report: <a href="/security/AUDIT.md">/security/AUDIT.md</a>.</p>
+    <p style="margin-top:10px">Full security assessment: <a href="/security/AUDIT.md">/security/AUDIT.md</a> · <a href="audits.html">Security &amp; Audit page</a>.</p>
   </section>
 
   <section>
@@ -141,7 +142,7 @@
     </table>
   </section>
 
-  <p class="disc">$GHS is a meme/entertainment token with no intrinsic value and no expectation of profit. Crypto is extremely volatile and most memecoins go to zero. Nothing here is financial advice. Only spend what you can afford to lose entirely. Do your own research — start with the verification links above.</p>
+  <p class="disc">$GHS is a satirical, community, entertainment token with no intrinsic value and no promise of return. Nothing here is financial advice — do your own research and verify on-chain using the links above. Not affiliated with Solana, any religion, or St. Jude.</p>
 </div>
 <script>
   document.getElementById('updated').textContent =

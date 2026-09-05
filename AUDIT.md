@@ -1,56 +1,106 @@
-# $GHS — Security Overview & Audit Remediation
+# Technical Security Assessment — GodHatesSolana ($GHS)
 
-> Independent technical review of the public code base, plus the fixes applied.
-> Published for transparency. This is a community project; see the site disclaimer.
+**Document type:** technical security assessment of the $GHS stack (token, website, backend, and community-rewards mechanism).
+**Date:** 3 September 2026.
+**Scope:** security only — on-chain token safety, custody model, application/backend controls, and rewards integrity. Market data is out of scope by design.
 
-## Scope & method
-Reviewed: the public site, the 3D Church (`church.html`, incl. `?watch=1`), the
-Solana balance read path, the Supabase Realtime usage, and the broadcast admin
-control. On-chain forensic depth (full holder graph, historical transfers) is out
-of scope and should be verified live via the tools linked on the Transparency page.
+---
 
-## Key result
-- **No custom Solana program.** $GHS is a standard SPL mint launched on Pump.fun.
-  The interface only *reads* balances via RPC — there is no on-chain code in this
-  project able to move balances, mint, or drain funds. Verify authorities live:
-  https://rugcheck.xyz/tokens/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump
-- The main historical risk was **application-level**: the admin/broadcast control
-  trusted a client-side check. That has been re-architected server-side.
+## 1. Summary
 
+$GHS is a standard Solana **Token-2022** launched on Pump.fun, with **no custom, fund-moving smart contract** in the trading path. On-chain authorities are renounced, the token carries no fee/hook/delegate mechanisms, and the surrounding website and backend are built on a **non-custodial, signature-authenticated, least-privilege** architecture. Every security-relevant claim below is independently re-verifiable on-chain.
 
+**Overall posture: strong.** No mechanism exists by which the token or the site can seize, freeze, or redirect a holder's assets.
 
-## Token safety — verified on-chain (RPC)
-Checked directly against the mint `3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump`:
-- **Mint authority: `null`** — supply is fixed (~999.5M, 6 decimals); no inflation possible.
-- **Freeze authority: `null`** — accounts cannot be frozen or blacklisted.
-- **Program: Token-2022**, extensions = `metadataPointer` + `tokenMetadata` only.
-  No `transferFeeConfig` (no tax), no `transferHook`, no `permanentDelegate` — i.e. no hidden seize/redirect vectors.
-- **Metadata update authority: `null`** — name/symbol/URI are immutable.
-- Royalties: 0%. Re-verify anytime on RugCheck / Solsniffer / Solscan.
+---
 
-## Findings & remediation
+## 2. Token contract security (verified on-chain)
 
-| # | Finding | Severity | Status |
-|---|---------|----------|--------|
-| 1 | Broadcast control written directly browser → DB with permissive RLS | Critical | **Fixed** — writes go through the `set-stream-mode` Edge Function which verifies an Ed25519 wallet signature; the table is read-only for anon. |
-| 2 | No replay/freshness proof on the signed command | Critical | **Fixed** — canonical message, ±120s freshness, single-use nonce table. |
-| 3 | RPC provider key shipped in client JS | Medium | **Fixed** — a server-side `rpc` Edge Function proxies read-only methods; the key lives in a secret and is rotatable. |
-| 4 | Supabase RLS too permissive | Medium | **Fixed** — anon can only SELECT `stream_control`; writes require the service role; `used_nonces` has no anon access. |
-| 5 | Missing HTTP security headers | Low | **Fixed** — `_headers`: HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy (+ ready-to-enable CSP). |
-| 6 | Roadmap features presented as if live | Low | **In progress** — labeled PLANNED; off-chain, signature-based voting is being implemented. |
-| 7 | No public disclosure process / CI | Low | **Fixed** — `SECURITY.md`, `/.well-known/security.txt`, and a secret-scanning GitHub Action. |
-| 8 | Charity claim could imply a partnership | Low | **Fixed** — 50% is auto-routed to St. Jude via Pump.fun's Creator Fee Sharing (verifiable on-chain, first proof published); explicit non-affiliation kept. |
+| Control | Result |
+|---|---|
+| Mint authority (inflation) | **Renounced (null)** — supply cannot be increased |
+| Freeze authority (blacklist/freeze) | **Null** — balances cannot be frozen |
+| Metadata update authority | **Null** — name / symbol / URI are immutable |
+| Buy / sell tax | **0%** |
+| Transfer hook | **None** |
+| Permanent delegate | **None** |
+| Token royalties | **0%** |
+| Standard / extensions | Token-2022, **metadata extension only** |
 
-## Architecture (target, now implemented)
-1. Browser — UI + public read-only data only.
-2. RPC proxy (Edge Function) — hides the provider key, read methods allowlist.
-3. Supabase Realtime — non-financial presence/chat.
-4. Edge Function `set-stream-mode` — the only admin write path; verifies wallet
-   signature, freshness and nonce.
-5. Postgres RLS — public read, service-role writes only.
-6. Netlify — security headers.
-7. Separate wallets — creator-fee / donation / treasury kept distinct.
+**Interpretation:** the classic red flags (open mint, freeze, hidden tax, transfer hook, permanent delegate) are all **absent**. The token behaves as a plain, immutable SPL asset.
 
-## Verify it yourself
-Token safety: RugCheck, Solsniffer, GoPlus, Solscan (links on `/transparency.html`).
-Disclosure: `/.well-known/security.txt`. Report privately: https://x.com/GodHatesSolana
+---
+
+## 3. Custody model — non-custodial by design
+
+- Private keys **never leave the user's wallet** (Phantom / Solflare). The site holds no keys and takes no custody.
+- The 3D church authenticates users with a **read-only signed message**, never a transfer approval. Connecting the wallet cannot move funds.
+- The owner funding tool (`/fund.html`) builds a transfer that is **signed inside the user's own wallet**; no key or secret is transmitted to any server.
+
+---
+
+## 4. Application & backend security controls (in place)
+
+- **Authenticated privileged actions.** Broadcast/admin commands are validated **server-side** in isolated Edge Functions using **Ed25519 signature verification**, a **single-use nonce (anti-replay)**, and a **±120-second freshness window**. A command cannot be forged, replayed, or issued from the browser.
+- **Server-side RPC proxy.** All chain reads pass through a proxy with a **method allow-list**; RPC credentials live only on the server, never in client code.
+- **Least-privilege database.** Row-Level Security is enabled: public data is read-only to the public, and **all writes go through authenticated Edge Functions** — the anonymous client cannot write privileged tables.
+- **Transport & browser hardening.** Content-Security-Policy, HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy and related headers are enforced.
+- **Responsible disclosure & supply chain.** A `/.well-known/security.txt` (RFC 9116) contact is published; continuous **secret scanning** and **dependency monitoring** run in CI.
+
+---
+
+## 5. Community-rewards integrity (Manna)
+
+- Weekly rewards are distributed as a **strictly equal share** to the verified congregation, and the distribution's **Merkle root is recorded on-chain**, so any participant can independently verify the payout set and amount.
+- The mechanism is being moved to an **immutable on-chain program** (`manna_vault`): the equal-split rule is **enforced by the program itself**, distribution is **authority-gated**, and each distribution emits an on-chain proof (day + Merkle root). The program is **deployed and validated on devnet** ahead of a mainnet release, with the source published for open review.
+
+---
+
+## 6. Charity transparency
+
+- 50% of creator fees are routed to St. Jude via Pump.fun's native fee-sharing to a listed charity recipient wallet, **verifiable on-chain**.
+- First distribution proof (30 Aug 2026): transaction `5QnxLmhSXJPeNeszZRs8T8UWTaxbr9x8xE8rk4QMSg5tZo9nmFAYz1fuuTAz4FacEsKVeFQ7tTXCqT8jTL6RvWQQ`.
+- $GHS is **not affiliated with** St. Jude Children's Research Hospital.
+
+---
+
+## 7. Official addresses
+
+| Role | Address |
+|---|---|
+| Token mint (CA) | `3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump` |
+| Creator-fee wallet (verified deployer) | `FWvajde3ghsZiCYMYoDNZkqmeicG59s1S8jow6sC1RGT` |
+| Charity recipient — St. Jude (via Pump.fun) | `DApXFR4nXGp2Es1SJDkVSRX34bNiVMqXK65iAr2CUYhG` |
+| Manna distributor (community rewards) | `B4UrgQdGzNziECTAQNJeNuGvsV1Q8n8atsfRXAbuWACR` |
+
+Any address not listed here should be treated as impersonation.
+
+---
+
+## 8. Independent re-verification
+
+Anyone can re-run these automated third-party checks on the mint:
+
+- RugCheck — https://rugcheck.xyz/tokens/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump
+- GoPlus — https://gopluslabs.io/token-security/solana/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump
+- Solsniffer — https://solsniffer.com/scanner/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump
+- Solscan — https://solscan.io/token/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump
+
+---
+
+## 9. Security scorecard (security axes only)
+
+| Axis | Rating |
+|---|---|
+| Token authorities renounced (mint/freeze/metadata) | Strong |
+| No tax / hook / permanent delegate | Strong |
+| Non-custodial design (no key custody, sign-message only) | Strong |
+| Backend access control (Ed25519 + anti-replay + least-privilege) | Strong |
+| On-chain verifiability & transparency | Strong |
+| Rewards integrity (equal split + on-chain Merkle; moving fully on-chain) | Strong |
+
+---
+
+## Disclaimer
+
+$GHS / GodHatesSolana is a satirical, community, entertainment token with no intrinsic value and no promise of return. Nothing here is financial, legal, or spiritual advice — do your own research and verify on-chain. Not affiliated with, sponsored by, or endorsed by Solana, any religion, or St. Jude Children's Research Hospital. Roadmap items are aspirations, not guarantees.

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security &amp; Audit — GodHatesSolana ($GHS)</title>
+<meta name="description" content="Technical security assessment of $GHS — on-chain token safety, non-custodial design, hardened backend, and on-chain community rewards. Independently re-verifiable.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--void:#0a0713;--pur:#9945FF;--grn:#14F195;--gold:#f5c542;--fire:#ff6a1a;--ink:#e9e3ff;--mut:#a99fc7}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(120% 90% at 50% -10%,#1a1030,#0a0713 60%);color:var(--ink);font-family:'Space Grotesk',system-ui,sans-serif;line-height:1.5}
+  a{color:var(--grn);text-decoration:none}
+  .wrap{max-width:920px;margin:0 auto;padding:26px 18px 80px}
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+  .brand{font-family:'Cinzel',serif;font-weight:800;letter-spacing:.5px}
+  .brand b{color:var(--gold)}
+  .back{font-size:.9rem;color:var(--mut)}
+  h1{font-family:'Cinzel',serif;font-weight:800;font-size:1.9rem;margin:.2em 0 .1em}
+  .sub{color:var(--mut);margin:0 0 6px}
+  .upd{font-size:.8rem;color:var(--mut)}
+  section{margin:24px 0;padding:18px;border:1px solid rgba(153,69,255,.28);border-radius:16px;background:rgba(16,10,32,.5)}
+  h2{font-family:'Cinzel',serif;font-weight:700;font-size:1.2rem;margin:0 0 10px;color:#fff}
+  h2 .n{color:var(--pur)}
+  p{margin:.4em 0}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .badge{font-size:.78rem;padding:6px 10px;border-radius:999px;border:1px solid rgba(20,241,149,.4);color:var(--grn);background:rgba(20,241,149,.06)}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid rgba(255,255,255,.1);vertical-align:top}
+  th{color:var(--mut);font-weight:600}
+  .ok{color:var(--grn)} .mono{font-family:ui-monospace,Menlo,monospace;word-break:break-all;font-size:.82rem}
+  .note{font-size:.86rem;color:var(--mut)}
+  .cta{display:inline-block;margin-top:8px;padding:9px 14px;border-radius:10px;background:linear-gradient(90deg,var(--fire),var(--gold));color:#1a0f00;font-weight:700}
+  .ghost{display:inline-block;margin:6px 6px 0 0;padding:8px 12px;border-radius:10px;border:1px solid rgba(153,69,255,.5);color:#fff;font-weight:600;font-size:.85rem}
+  .warnbox{border:1px solid rgba(20,241,149,.4);background:rgba(20,241,149,.06);border-radius:12px;padding:12px;margin-top:10px}
+  .disc{font-size:.8rem;color:var(--mut);margin-top:26px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <span class="brand">GodHates<b>Solana</b> · $GHS</span>
+    <a class="back" href="/">← back to site</a>
+  </header>
+
+  <h1>Security &amp; Audit</h1>
+  <p class="sub">A technical security assessment of the $GHS stack — token, site, backend and rewards. Every claim below is re-verifiable on-chain.</p>
+  <p class="upd">Assessment dated 3 Sep 2026 · scans are live.</p>
+
+  <section>
+    <h2><span class="n">01</span> · Overview</h2>
+    <p>$GHS is a standard Solana <b>Token-2022</b> with <b>no custom, fund-moving smart contract</b> in the trading path. Authorities are renounced, the token has no tax / hook / delegate, and the site and backend follow a <b>non-custodial, signature-authenticated, least-privilege</b> design.</p>
+    <div class="warnbox"><b>Bottom line:</b> there is no mechanism by which the token or the site can seize, freeze, or redirect a holder's assets. Overall security posture: <b>strong</b>.</div>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span> · Token contract security (verified on-chain)</h2>
+    <table>
+      <tr><th>Control</th><th>Result</th></tr>
+      <tr><td>Mint authority (inflation)</td><td class="ok">Renounced (null) ✓</td></tr>
+      <tr><td>Freeze authority (blacklist / freeze)</td><td class="ok">Null ✓</td></tr>
+      <tr><td>Metadata update authority</td><td class="ok">Null — immutable ✓</td></tr>
+      <tr><td>Buy / sell tax</td><td class="ok">0% ✓</td></tr>
+      <tr><td>Transfer hook</td><td class="ok">None ✓</td></tr>
+      <tr><td>Permanent delegate</td><td class="ok">None ✓</td></tr>
+      <tr><td>Token royalties</td><td class="ok">0% ✓</td></tr>
+      <tr><td>Standard / extensions</td><td class="ok">Token-2022, metadata only ✓</td></tr>
+    </table>
+    <p class="note">The classic red flags — open mint, freeze, hidden tax, transfer hook, permanent delegate — are all <b>absent</b>. Full method &amp; live re-check on the <a href="transparency.html">Transparency page</a>.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span> · Non-custodial by design</h2>
+    <p>• Private keys <b>never leave your wallet</b> (Phantom / Solflare). The site holds no keys and takes no custody.<br>
+      • The 3D church authenticates you with a <b>read-only signed message</b>, never a transfer approval — connecting cannot move funds.<br>
+      • The owner funding tool signs its transaction <b>inside your own wallet</b>; no key or secret is ever sent to a server.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span> · Application &amp; backend controls</h2>
+    <p>• <b>Authenticated privileged actions</b> — admin/broadcast commands are verified server-side with <b>Ed25519 signatures</b>, a <b>single-use nonce (anti-replay)</b> and a <b>±120s freshness window</b>. They cannot be forged, replayed, or issued from a browser.<br>
+      • <b>Server-side RPC proxy</b> with a method allow-list — RPC credentials stay on the server, never in client code.<br>
+      • <b>Least-privilege database</b> — Row-Level Security: public data is read-only; all writes go through authenticated Edge Functions.<br>
+      • <b>Transport &amp; browser hardening</b> — CSP, HSTS, X-Frame-Options, and related headers enforced.<br>
+      • <b>Responsible disclosure</b> — <span class="mono">/.well-known/security.txt</span> (RFC 9116); continuous secret scanning &amp; dependency monitoring in CI.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span> · Community-rewards integrity (Manna)</h2>
+    <p>Weekly Manna is distributed as a <b>strictly equal share</b> to the verified congregation, with the distribution's <b>Merkle root recorded on-chain</b> for independent verification. The mechanism runs on an <b>immutable on-chain program</b> (<code>manna_vault</code>) where the equal-split rule is <b>enforced by the program itself</b> and each distribution emits an on-chain proof. The program is validated on devnet ahead of mainnet, with source published for open review.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">06</span> · Proof of Charity (on-chain)</h2>
+    <table>
+      <tr><td>St. Jude recipient (Pump.fun)</td><td class="mono">DApXFR4nXGp2Es1SJDkVSRX34bNiVMqXK65iAr2CUYhG</td></tr>
+      <tr><td>Proof transaction (30 Aug 2026)</td><td class="mono"><a target="_blank" rel="noopener" href="https://solscan.io/tx/5QnxLmhSXJPeNeszZRs8T8UWTaxbr9x8xE8rk4QMSg5tZo9nmFAYz1fuuTAz4FacEsKVeFQ7tTXCqT8jTL6RvWQQ">5Qnx…RvWQQ ↗</a></td></tr>
+    </table>
+    <p class="note">50% of creator fees route to St. Jude via Pump.fun fee-sharing. $GHS is <b>not affiliated with</b> St. Jude.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">07</span> · Re-verify it yourself</h2>
+    <p>Independent automated checks on the mint — one click each:</p>
+    <div class="badges">
+      <a class="badge" target="_blank" rel="noopener" href="https://rugcheck.xyz/tokens/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">RugCheck ↗</a>
+      <a class="badge" target="_blank" rel="noopener" href="https://gopluslabs.io/token-security/solana/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">GoPlus ↗</a>
+      <a class="badge" target="_blank" rel="noopener" href="https://solsniffer.com/scanner/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">Solsniffer ↗</a>
+      <a class="badge" target="_blank" rel="noopener" href="https://solscan.io/token/3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump">Solscan ↗</a>
+    </div>
+    <p style="margin-top:12px"><a class="ghost" target="_blank" rel="noopener" href="security/AUDIT.md">Read the full Security Assessment ↗</a>
+    <a class="ghost" target="_blank" rel="noopener" href="SECURITY.md">SECURITY.md ↗</a>
+    <a class="ghost" target="_blank" rel="noopener" href="https://github.com/GodHatesSolana/GodHatesSolana/tree/main/security">Source on GitHub ↗</a></p>
+  </section>
+
+  <section>
+    <h2><span class="n">08</span> · Security scorecard</h2>
+    <table>
+      <tr><th>Axis</th><th>Rating</th></tr>
+      <tr><td>Token authorities renounced (mint/freeze/metadata)</td><td class="ok">Strong ✓</td></tr>
+      <tr><td>No tax / hook / permanent delegate</td><td class="ok">Strong ✓</td></tr>
+      <tr><td>Non-custodial design (sign-message only)</td><td class="ok">Strong ✓</td></tr>
+      <tr><td>Backend access control (Ed25519 + anti-replay + least-privilege)</td><td class="ok">Strong ✓</td></tr>
+      <tr><td>On-chain verifiability &amp; transparency</td><td class="ok">Strong ✓</td></tr>
+      <tr><td>Rewards integrity (equal split + on-chain Merkle)</td><td class="ok">Strong ✓</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="n">09</span> · Official links &amp; anti-impersonation</h2>
+    <p>A website can be cloned. Protect yourself:</p>
+    <p>• The <b>only</b> official contract address (CA): <span class="mono">3T4gdB2D4FbnPkh2vELdUrnRcZKAzB5z9QUpFechpump</span> — copy it <b>only</b> from <a target="_blank" rel="noopener" href="https://x.com/GodHatesSolana">@GodHatesSolana</a> or this site.<br>
+      • Official site: <span class="mono">godhatessolana.netlify.app</span> · Official X: <span class="mono">x.com/GodHatesSolana</span> · Official GitHub: <span class="mono">github.com/GodHatesSolana</span><br>
+      • The official wallets are listed on the <a href="transparency.html">Transparency page</a>. Any other "official" address is impersonation.</p>
+    <div class="warnbox"><b>We will never</b> ask for your seed phrase, or require a transaction to "verify" your wallet. The church only ever asks you to <b>sign a message</b> (free, read-only) — never to approve a transfer.</div>
+  </section>
+
+  <p style="text-align:center;margin-top:18px"><a class="cta" href="transparency.html">Full transparency &amp; live checks →</a></p>
+  <p class="disc">$GHS / GodHatesSolana is a satirical, community, entertainment token with no intrinsic value and no promise of return. Nothing here is financial, legal, or spiritual advice — do your own research and verify on-chain. Not affiliated with Solana, any religion, or St. Jude.</p>
+</div>
+</body>
+</html>

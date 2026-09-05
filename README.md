@@ -47,6 +47,6 @@ Single-file HTML/CSS/JS site · Three.js (3D church) · Supabase Realtime
 
 ## ⚠️ Disclaimer
 $GHS is a meme/entertainment token with **no intrinsic value and no expectation
-of profit**. Crypto is extremely volatile and most memecoins go to zero. Nothing
-here is financial advice. Only spend what you can afford to lose entirely. Do your
+of profit**. Nothing
+here is financial advice. Do your
 own research.
